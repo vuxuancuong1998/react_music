@@ -46,7 +46,7 @@ export default class MusicCard extends Component {
   //   }
   // }
   remove = ()=>{
-    this.props.handleTrashItem(this.props.index);
+    this.props.handleTrashItem(this.props.item);
   }
   render() {
     const { item } = this.state;

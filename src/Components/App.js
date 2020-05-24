@@ -104,10 +104,10 @@ export default class App extends Component {
       listMusic: [...song],
     });
   };
-  handleTrashItem = (index) => {
-    console.log(index)
+  handleTrashItem = (item) => {
     let song = this.state.listMusic;
-    let deletesong = song.splice(index, 1);
+    let index = song.indexOf(item)
+   song.splice(index, 1);
     // console.log("song",song)
     // console.log("deletesong",deletesong)
     this.setState({listMusic: [...song]});
