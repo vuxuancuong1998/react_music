@@ -12,12 +12,12 @@ export default class InfoCard extends Component {
         const {item} = this.props;
         return (
             <>
-            <FaInfo style={ColorBtn} data-toggle="modal" data-target={"#exampleModal" + item.id}>
+            <FaInfo style={ColorBtn} data-toggle="modal" data-target={"#exampleModal" + item._id}>
                     <button />
                   </FaInfo>
                   <div
                     className="modal fade"
-                    id={"exampleModal" + item.id}
+                    id={"exampleModal" + item._id}
                     tabIndex={-1}
                     role="dialog"
                     aria-labelledby="exampleModalLabel"
@@ -41,10 +41,7 @@ export default class InfoCard extends Component {
                         <div className="modal-body">
                           <table className="table table-bordered">
                             <thead>
-                              <tr>
-                                <th scope="col">Mã số</th>
-                                <th scope="col">{item.id}</th>
-                              </tr>
+                              
                               <tr>
                                 <th scope="col">Tên bài hát</th>
                                 <th scope="col">{item.name}</th>
@@ -54,7 +51,7 @@ export default class InfoCard extends Component {
                                 <th scope="col">{item.author}</th>
                               </tr>
                               <tr>
-                                <th scope="col">Ngày xuất bản</th>
+                                <th scope="col">Ngày cập nhật</th>
                                 <th scope="col">{item.day}</th>
                               </tr>
                               <tr>

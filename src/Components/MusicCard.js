@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { FaHeartbeat, FaTrash } from "react-icons/fa";
 import InfoCard from "./InfoCard";
+import ReactPlayer from 'react-player/youtube';
 export default class MusicCard extends Component {
   constructor() {
     super();
@@ -14,26 +15,24 @@ export default class MusicCard extends Component {
       item: [{ ...this.props.item }],
     });
   }
-  setIsLove = () => {
-    if (this.props.item.isLove === true) {
-      alert("Bài hát này đã có trong danh sách yêu thích của bạn!");
-    } else this.props.handleIsLove(this.props.item.id);
+  unLove = () => {
+      this.props.handleIsLove(this.props.item._id,false);
   };
   setIsLoved = () => {
-    this.props.handleIsLoved(this.props.item.id);
+    this.props.handleIsLove(this.props.item._id,true);
   };
   checkIsLove = () => {
-    if (this.props.isLoved) {
-      this.setIsLoved();
+    if (this.props.item.isLove) {
+      this.unLove();
     } else {
-      this.setIsLove();
+      this.setIsLoved();
       alert(
         "Bài hát đã được chuyển vào danh sách bài hát yêu thích (^_^)"
       );
     }
   };
   setIsTrash = () => {
-    this.props.handleIsTrash(this.props.item.id);
+    this.props.handleIsTrash(this.props.item._id);
     alert(
       "Đã xoá bài hát !! Bài hát đã được chuyển vào danh sách bài hát đã xoá"
     );
@@ -50,6 +49,7 @@ export default class MusicCard extends Component {
   }
   render() {
     const { item } = this.state;
+
     // console.log(this.state.item);
     return (
       <>
@@ -58,26 +58,21 @@ export default class MusicCard extends Component {
             <div className="col-md-4 mb-5 ">
               <div className="card h-100">
                 <div className="card-body">
-                  <h2 className="card-title">
-                    <img
-                      className="img-song"
-                      src={require("../img/" + this.props.item.image)}
-                      width="310px"
-                      height="200px"
-                    />
-                  </h2>
                   <div className="card-title">
-                    <audio controls>
-                      <source
-                        src={require("../mp3/" + this.props.item.mp3)}
-                        type="audio/mpeg"
-                      />
-                    </audio>
+                  <div className="player-wrapper">
+                    <ReactPlayer
+                      url={this.props.item.url}
+                      className='react-player'
+                    
+                      width='100%'
+                      height='100%'
+                    />
                   </div>
+                    </div>
                   <p className="card-text">{this.props.item.name}</p>
                 </div>
                 <div className="card-footer">
-                  <InfoCard item={this.props.item} />
+                  {/* <InfoCard item={this.props.item} />
                   <Heart>
                     <FaHeartbeat
                       onClick={this.checkIsLove}
@@ -85,15 +80,27 @@ export default class MusicCard extends Component {
                         alert("Thao tác quá nhanh, vui lòng sống chậm lại");
                       }}
                     />
-                  </Heart>
-                  {
-                    this.props.item.isTrash === false ?  
-                    <Btn onClick={this.setIsTrash}>
-                    <FaTrash  />
-                  </Btn> :
-                    <Btn onClick={this.remove}>
+                  </Heart> */}
+                  { 
+                    this.props.item.isTrash ?  
+                    <Btn onClick={this.remove} >
                     <FaTrash />
                   </Btn>
+                    :
+                    <>
+                     <InfoCard item={this.props.item} />
+                  <Heart>
+                    <FaHeartbeat
+                      onClick={this.checkIsLove}
+                      onDoubleClick={() => {
+                        alert("Thao tác quá nhanh, vui lòng sống chậm lại");
+                      }}
+                    />
+                  </Heart> 
+                    <Btn onClick={this.setIsTrash} >
+                      <FaTrash  />
+                    </Btn> 
+                    </>
                   }
                 </div>
               </div>

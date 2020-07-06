@@ -19,7 +19,7 @@ export default class Content extends Component {
     const { listMusic } = this.props;
     return (
       <>
-        <Banner />
+        <Banner handleAddMusic={this.props.handleAddMusic}/>
         <div className="container">
           <div className="row">
             {listMusic.map((item, index) => (

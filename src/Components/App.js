@@ -6,119 +6,95 @@ import Footer from "./Footer";
 import Login from "./Login";
 import LoveMusic from "./LoveMusic";
 import TrashMusic from "./TrashMusic";
+const axios = require('axios');
 
-const ListMusic = [
-  {
-    id: 1,
-    name: "See you again",
-    author: "Le-Nin",
-    image: "see-you-again.jpg",
-    mp3: "SeeYouAgain.mp3",
-    day: "29-09-1998",
-    type: "Nhạc trẻ",
-    isLove: false,
-    isTrash: true,
-  },
-  {
-    id: 2,
-    name: "Safe and Sound",
-    author: "Ang-Ghen",
-    image: "safeandsound.jpg",
-    mp3: "safeandsound.mp3",
-    day: "21-02-1994",
-    type: "Nhạc trẻ",
-    isLove: true,
-    isTrash: false,
-  },
-  {
-    id: 3,
-    name: "My love",
-    author: "C-Mac",
-    image: "mylove.jpg",
-    mp3: "mylove.mp3",
-    day: "10-01-2002",
-    type: "Nhạc trẻ",
-    isLove: false,
-    isTrash: false,
-  },
-  {
-    id: 4,
-    name: "In my mind",
-    author: "En-Gels",
-    image: "inmymind.jpg",
-    mp3: "inmymind.mp3",
-    day: "09-02-1999",
-    type: "Nhạc trẻ",
-    isLove: false,
-    isTrash: false,
-  },
-  {
-    id: 5,
-    name: "That girl",
-    author: "Maria",
-    image: "thatgirl.jpg",
-    mp3: "thatgirl.mp3",
-    day: "12-01-2000",
-    type: "Nhạc trẻ",
-    isLove: false,
-    isTrash: false,
-  },
-  {
-    id: 6,
-    name: "Why not my",
-    author: "FuKuDa",
-    image: "whynotme.jpg",
-    mp3: "whynotme.mp3",
-    day: "29-01-2009",
-    type: "Nhạc trẻ",
-    isLove: false,
-    isTrash: false,
-  },
-];
+
 
 export default class App extends Component {
   constructor() {
     super();
     this.state = {
-      listMusic: [...ListMusic],
+      listMusic: [],
     };
   }
+  componentDidMount(){
+    this.getMusic();
+  }
+  async getMusic(){
+    let res = await axios.get("http://localhost:3001/music");
+    // console.log(res.data)
+    this.setState({
+      listMusic: [...res.data],
+    });
+  }
+  handleAddMusic = async (name,author,type,url, isLove = false, isTrash = false)=>{
+    // console.log(name+":"+author+":"+type);
+    var date = new Date();
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    var newDate =day + ' - ' + month + ' - ' + year;
+    await axios.post("http://localhost:3001/music/add",{name:name, author:author, type:type, url:url, isLove:isLove, isTrash:isTrash,newDate});
+    this.getMusic();
+  }
 
-  handleIsLove = (id) => {
-    let song = this.state.listMusic;
-    song = song.map((item) => {
-      if (item.id === id) item.isLove = !item.isLove;
-      return item;
-    });
-    this.setState({
-      listMusic: [...song],
-    });
+  handleIsLove = async (_id,isLove) => {
+    // let song = this.state.listMusic;
+    // console.log(song)
+    // song = song.map((items) => {
+    //   if (items.item === item) items.isLove = !items.isLove;
+    //   return items;
+      
+    // }); 
+    // console.log(as);
+    // this.setState({
+      //   listMusic: [...song],
+      // });
+      await axios.post("http://localhost:3001/music/handleLove",{_id:_id,isLove:isLove});
+      this.getMusic();
   };
-  handleIsTrash = (id) => {
-    let song = this.state.listMusic;
-    song = song.map((item) => {
-      if (item.id === id) item.isTrash = !item.isTrash;
-      return item;
-    });
-    this.setState({
-      listMusic: [...song],
-    });
+  handleIsTrash = async (_id) => {
+    // let song = this.state.listMusic;
+    // song = song.map((item) => {
+    //   if (item.id === id) item.isTrash = !item.isTrash;
+    //   return item;
+    // });
+    // this.setState({
+    //   listMusic: [...song],
+    // });
+    await axios.post("http://localhost:3001/music/handleTrash",{_id:_id,isTrash:true});
+    this.getMusic();
+
+
   };
-  handleTrashItem = (item) => {
-    let song = this.state.listMusic;
-    let index = song.indexOf(item)
-   song.splice(index, 1);
-    // console.log("song",song)
-    // console.log("deletesong",deletesong)
-    this.setState({listMusic: [...song]});
-    console.log(this.state.listMusic)
+
+
+
+  handleTrashItem =async (item) => {
+  //   let song = this.state.listMusic;
+  //   let index = song.indexOf(item)
+  //  song.splice(index, 1);
+  //   // console.log("song",song)
+  //   // console.log("deletesong",deletesong)
+  //   this.setState({listMusic: [...song]});
+  //   console.log(item);
+    await axios.post("http://localhost:3001/music/TrashItem",{item:item});
+    this.getMusic();
+
   }
 
   render() {
     const ListMusic = this.state.listMusic
+    // console.log(ListMusic)
+    let HomeMusic = ListMusic.filter(item=>!item.isTrash);
+    let TrashMusicList = ListMusic.filter(item=>item.isTrash);
+    let LoveMusicList = ListMusic.filter(item=>item.isLove);
+    
     const styleMenu = {
       color: "white",
     };
+    
+   
     return (
       <Router>
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -168,9 +144,10 @@ export default class App extends Component {
           <Route exact path="/">
             <Content
               handleTrashItem={this.handleTrashItem}
-              listMusic={ListMusic}
+              listMusic={HomeMusic}
               handleIsLove={this.handleIsLove}
               handleIsTrash={this.handleIsTrash}
+              handleAddMusic={this.handleAddMusic}
             />
             <Footer />
           </Route>
@@ -178,14 +155,15 @@ export default class App extends Component {
           <Route path="/Home">
             <Content
               handleTrashItem={this.handleTrashItem}
-              listMusic={ListMusic}
+              listMusic={HomeMusic}
               handleIsLove={this.handleIsLove}
               handleIsTrash={this.handleIsTrash}
+              handleAddMusic={this.handleAddMusic}
             />
             <Footer />
           </Route>
           <Route path="/trash">
-            <TrashMusic listMusic={ListMusic} handleTrashItem={this.handleTrashItem} />
+            <TrashMusic listMusic={TrashMusicList} handleTrashItem={this.handleTrashItem} />
           </Route>
           <Route path="/login">
             <Login />
@@ -193,7 +171,7 @@ export default class App extends Component {
 
           <Route path="/love">
             <LoveMusic
-              listMusic={ListMusic}
+              listMusic={LoveMusicList}
               handleIsLove={this.handleIsLove}
               isLoved
               handleIsTrash={this.handleIsTrash}
